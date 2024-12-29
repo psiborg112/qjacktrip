@@ -9,13 +9,13 @@ It runs on several platforms, such as Linux, macOS, Windows or FreeBSD. You can 
 
 This repository is currently a work in progress. The source code has mostly been modified to where it initially needs to be, but the build system still needs work. It should theoretically build with meson as long as you specify the "novs" option, but this is not guaranteed. In the meantime, builds for Windows and macOS can be found [here](https://www.psi-borg.org/other-dev.html).
 
-##Important Info
+## Important Info
 It is not possible to connect to a JackTrip Labs Virtual Studio with this program. (Well, technically it might be, but not without really knowing what you are doing.) To easily connect to a Virtual Studio session, use the latest version of JackTrip itself.
 
 Unlike JackTrip which is released under the more permissive MIT license, this program is released under the GPLv3. If you want JackTrip labs to be able to use any contributions you make, DO NOT SUBMIT CODE HERE. (At least not without also submitting it upstream.)
 
 ![QJackTrip screenshot](qjacktrip.png)
-An early screenshot of QJackTrip
+*An early screenshot of QJackTrip*
 
 Further information and instructions are available on https://jacktrip.github.io/jacktrip/. 
 
