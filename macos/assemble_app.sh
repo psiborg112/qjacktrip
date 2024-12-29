@@ -1,7 +1,9 @@
 #!/bin/sh
 
-APPNAME="JackTrip"
-BUNDLE_ID="org.jacktrip.jacktrip"
+set -e
+
+APPNAME="QJackTrip"
+BUNDLE_ID="org.psi-borg.qjacktrip"
 BUILD_INSTALLER=false
 NOTARIZE=false
 
@@ -14,7 +16,7 @@ TEAM_ID=""
 KEY_STORE="AC_PASSWORD"
 TEMP_KEYCHAIN=""
 USE_DEFAULT_KEYCHAIN=false
-BINARY="../builddir/jacktrip"
+BINARY="../builddir/qjacktrip"
 PSI=false
 
 OPTIND=1
@@ -58,14 +60,14 @@ while getopts ":inhqklc:d:u:p:t:b:" opt; do
         echo "Invalid option -$OPTARG ignored."
         ;;
       h)
-        echo "JackTrip App Bundle assembly script."
+        echo "QJackTrip App Bundle assembly script."
         echo "Copyright (C) 2020-2021 Aaron Wyatt et al."
         echo "Released under the GNU GPLv3 License."
         echo
         echo "Usage: ./assemble-app.sh [options] [appname] [bundlename]"
         echo
         echo "Options:"
-        echo " -b <filename>      The binary file to be placed in the app bundle. (Defaults to ../builddir/jacktrip)"
+        echo " -b <filename>      The binary file to be placed in the app bundle. (Defaults to ../builddir/qjacktrip)"
         echo " -i                 Build an installer package as well. (Requires Packages to be installed.)"
         echo " -n                 Send a notarization request to Apple. (Only takes effect if building an installer.)"
         echo " -c <certname>      Name of the developer certificate to use for code signing. (No signing by default.)"
@@ -80,7 +82,7 @@ while getopts ":inhqklc:d:u:p:t:b:" opt; do
         echo " -l                 Use the default keychain instead of the login keychain to store credentials."
         echo " -h                 Display this help screen and exit."
         echo
-        echo "By default, appname is set to JackTrip and bundlename is org.jacktrip.jacktrip."
+        echo "By default, appname is set to QJackTrip and bundlename is org.psi-borg.qjacktrip."
         echo "(These should be left as is for official builds.)"
         echo
         echo "The username, password, and team ID are saved in the login keychain by notarytool."
@@ -103,7 +105,6 @@ shift $((OPTIND - 1))
 [ "$#" -gt 1 ] && BUNDLE_ID="$2"
 
 DYNAMIC_QT=$(otool -L $BINARY | grep QtCore)
-DYNAMIC_VS=$(otool -L $BINARY | grep QtQml)
 
 if [[ -n "$DYNAMIC_QT" && -n "$QT_PATH" ]]; then
   export DYLD_FRAMEWORK_PATH=$QT_PATH/lib
@@ -112,25 +113,19 @@ fi
 VERSION="$($BINARY -v | awk '/VERSION/{print $NF}')"
 [ -z "$VERSION" ] && { echo "Unable to determine binary version. Quitting."; exit 1; }
 
-# Make sure that jacktrip has been built with GUI support.
-$BINARY --test-gui || { echo "You need to build jacktrip with GUI support to build an app bundle."; exit 1; }
+# Make sure that qjacktrip has been built with GUI support.
+$BINARY --test-gui || { echo "You need to build qjacktrip with GUI support to build an app bundle."; exit 1; }
 
 echo "Building bundle $APPNAME (id: $BUNDLE_ID)"
 echo "for binary version $VERSION"
 
 rm -rf "$APPNAME.app"
-[ ! -d "JackTrip.app_template/Contents/MacOS" ] && mkdir JackTrip.app_template/Contents/MacOS
-cp -a JackTrip.app_template "$APPNAME.app"
+[ ! -d "QJackTrip.app_template/Contents/MacOS" ] && mkdir QJackTrip.app_template/Contents/MacOS
+cp -a QJackTrip.app_template "$APPNAME.app"
 cp -f $BINARY "$APPNAME.app/Contents/MacOS/"
 # copy licenses
 cp -f ../LICENSE.md "$APPNAME.app/Contents/Resources/"
 cp -Rf ../LICENSES "$APPNAME.app/Contents/Resources/"
-
-[ $PSI = true ] && cp jacktrip_alt.icns "$APPNAME.app/Contents/Resources/jacktrip.icns"
-
-if [ -n "$DYNAMIC_QT" ] && [ -z "$DYNAMIC_VS" ]; then
-    cp "Info_novs.plist" "$APPNAME.app/Contents/Info.plist" 
-fi
 
 sed -i '' "s/%VERSION%/$VERSION/" "$APPNAME.app/Contents/Info.plist"
 sed -i '' "s/%BUNDLENAME%/$APPNAME/" "$APPNAME.app/Contents/Info.plist"
@@ -139,26 +134,24 @@ sed -i '' "s/%BUNDLEID%/$BUNDLE_ID/" "$APPNAME.app/Contents/Info.plist"
 if [ -n "$DYNAMIC_QT" ]; then
     QT_VERSION="qt$(echo "$DYNAMIC_QT" | sed -E '1!d;s/.*compatibility version ([0-9]+)\.[0-9]+\.[0-9]+.*/\1/g')"
     echo "Detected a dynamic $QT_VERSION binary"
-    DEPLOY_CMD="$(which macdeployqt)"
+    DEPLOY_CMD="$(which macdeployqt)" || echo "Searching for macdeployqt..."
     if [ -z "$DEPLOY_CMD" ]; then
         # Attempt to find macdeployqt. Try macports location first, then brew.
         if [ -x "/opt/local/libexec/$QT_VERSION/bin/macdeployqt" ]; then
             DEPLOY_CMD="/opt/local/libexec/$QT_VERSION/bin/macdeployqt"
+            echo "Found macports install"
         elif [ -n $(which brew) ] && [ -n $(brew --prefix $QT_VERSION) ]; then
             DEPLOY_CMD="$(brew --prefix $QT_VERSION)/bin/macdeployqt"
+            echo "Found brew install"
         else
             echo "Error: The Qt bin folder needs to be in your PATH for this script to work."
             exit 1
         fi
     fi
-    QMLDIR=""
-    if [ -n "$DYNAMIC_VS" ]; then
-        QMLDIR=" -qmldir=../src/gui"
-    fi
     if [ -n "$CERTIFICATE" ]; then
-        $DEPLOY_CMD "$APPNAME.app"$QMLDIR -codesign="$CERTIFICATE"
+        $DEPLOY_CMD "$APPNAME.app" -codesign="$CERTIFICATE"
     else
-        $DEPLOY_CMD "$APPNAME.app"$QMLDIR
+        $DEPLOY_CMD "$APPNAME.app"
     fi
 fi
 
@@ -166,11 +159,6 @@ fi
 
 # If you have Packages installed, you can build an installer for the newly created app bundle.
 [ -z $(which packagesbuild) ] && { echo "Error: You need to have Packages installed to build a package."; exit 1; }
-
-if [ $PSI = true ]; then
-    cp "package/postinstall.sh" "package/postinstall.sh.bak"
-    sed -i '' "s/^open/#open/" "package/postinstall.sh"
-fi
 
 # Needed for notarization.
 if [ -n "$CERTIFICATE" ]; then
@@ -181,8 +169,6 @@ fi
 # prepare license
 LICENSE_PATH="package/license.txt"
 cat ../LICENSE.md > "$LICENSE_PATH"
-printf "\n\n" >> "$LICENSE_PATH"
-cat ../LICENSES/MIT.txt >> "$LICENSE_PATH"
 printf "\n\n" >> "$LICENSE_PATH"
 cat ../LICENSES/GPL-3.0.txt >> "$LICENSE_PATH"
 printf "\n\n" >> "$LICENSE_PATH"
@@ -197,22 +183,21 @@ cp ../README.md "$README_PATH"
 sed -i '' "s/# //" "$README_PATH" # remove markdown header
 perl -ane 'chop;print "\n\n" if(/^\s*$/); map{print "$_ ";}@F;' "$README_PATH" > tmp && mv tmp "$README_PATH" # unwrap lines
 
-cp package/JackTrip.pkgproj_template package/JackTrip.pkgproj
-sed -i '' "s/%VERSION%/$VERSION/" package/JackTrip.pkgproj
-sed -i '' "s/%BUNDLENAME%/$APPNAME/" package/JackTrip.pkgproj
-sed -i '' "s/%BUNDLEID%/$BUNDLE_ID/" package/JackTrip.pkgproj
+cp package/QJackTrip.pkgproj_template package/QJackTrip.pkgproj
+sed -i '' "s/%VERSION%/$VERSION/" package/QJackTrip.pkgproj
+sed -i '' "s/%BUNDLENAME%/$APPNAME/" package/QJackTrip.pkgproj
+sed -i '' "s/%BUNDLEID%/$BUNDLE_ID/" package/QJackTrip.pkgproj
 
-echo "Building JackTrip.pkg"
-packagesbuild package/JackTrip.pkgproj
-[ $PSI = true ] && mv "package/postinstall.sh.bak" "package/postinstall.sh"
-if pkgutil --check-signature package/build/JackTrip.pkg; then
+echo "Building QJackTrip.pkg"
+packagesbuild package/QJackTrip.pkgproj
+if pkgutil --check-signature package/build/QJackTrip.pkg; then
     echo "Package already signed."
     SIGNED=true
 else
     if [ -n "$PACKAGE_CERT" ]; then
         echo "Signing package."
-        if productsign --sign "$PACKAGE_CERT" package/build/JackTrip.pkg package/build/JackTrip-signed.pkg; then
-            mv package/build/JackTrip-signed.pkg package/build/JackTrip.pkg
+        if productsign --sign "$PACKAGE_CERT" package/build/QJackTrip.pkg package/build/QJackTrip-signed.pkg; then
+            mv package/build/QJackTrip-signed.pkg package/build/QJackTrip.pkg
             SIGNED=true
         else
             echo "Unable to sign package."

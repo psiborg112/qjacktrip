@@ -17,6 +17,9 @@ site/
 # macOS files
 .DS_Store
 
+# generated auth files
+auth/
+
 # app bundle and installer
 macos/*.app
 macos/package/build

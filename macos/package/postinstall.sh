@@ -6,5 +6,5 @@ rm -f /usr/local/bin/jacktrip
 ln -s "$2"/Contents/MacOS/jacktrip /usr/local/bin/jacktrip
 
 # Open JackTrip on intaller finish
-open -a /Applications/JackTrip.app
+#open -a /Applications/JackTrip.app
 exit 0
