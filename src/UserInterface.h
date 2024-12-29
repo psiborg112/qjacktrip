@@ -94,14 +94,7 @@ class UserInterface
    private:
     uiModeT m_uiMode = MODE_UNSET;
     QSharedPointer<Settings> m_cliSettings;
-
-#ifndef NO_VS
-    QSharedPointer<VirtualStudio> m_vs_ui;
-#endif
-
-#ifndef NO_CLASSIC
     QSharedPointer<QJackTrip> m_classic_ui;
-#endif
 
 #ifdef __APPLE__
     NoNap m_noNap;

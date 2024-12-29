@@ -172,11 +172,9 @@ int main(int argc, char* argv[])
         cliSettings.reset(new Settings(false));
         cliSettings->parseInput(argc, argv);
 
-#ifndef PSI
-        if (gVerboseFlag) {
+        /*if (gVerboseFlag) {
             QLoggingCategory::setFilterRules(QStringLiteral("*.debug=true"));
-        }
-#endif
+        }*/
 
         // Either start our hub server or our jacktrip process as appropriate.
         if (cliSettings->isHubServer()) {

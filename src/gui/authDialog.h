@@ -4,7 +4,7 @@
   system for high quality audio network performance over the
   internet.
 
-  Copyright (c) 2020 Aaron Wyatt.
+  Copyright (c) 2022 Aaron Wyatt.
 
   This file is part of QJackTrip.
 
@@ -23,23 +23,44 @@
 */
 //*****************************************************************
 
-#ifndef __NONAP_H__
-#define __NONAP_H__
+#ifndef AUTHDIALOG_H
+#define AUTHDIALOG_H
 
-#include <objc/objc.h>
+#include <QDialog>
+#include <QScopedPointer>
 
-class NoNap
+#include "../Auth.h"
+
+namespace Ui
 {
-   public:
-    NoNap();
-    ~NoNap();
+class AuthDialog;
+}
 
-    void disableNap();
-    void enableNap();
+class AuthDialog : public QDialog
+{
+    Q_OBJECT
+
+   public:
+    explicit AuthDialog(QWidget* parent = nullptr, const QString& credsFile = "", const QString& lastPath = "");
+    ~AuthDialog() override;
+    
+    void showEvent(QShowEvent* event) override;
+    void closeEvent(QCloseEvent* event) override;
+    
+   signals:
+    void signalFileChanged(const QString& fileName);
+
+   private slots:
+    void createFile();
+    void browseForFile();
+    void savePosition();
 
    private:
-    id m_activity;
-    bool m_preventNap;
+    QScopedPointer<Ui::AuthDialog> m_ui;
+    QScopedPointer<Auth> m_auth;
+    QString m_lastPath;
+    
+    bool m_changed = false;
 };
 
-#endif  // __NONAP_H__
+#endif  // AUTHDIALOG_H

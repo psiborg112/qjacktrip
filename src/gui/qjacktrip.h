@@ -88,9 +88,6 @@ class QJackTrip : public QMainWindow
     void exit();
     void updatedInputMeasurements(const float* valuesInDb, int numChannels);
     void updatedOutputMeasurements(const float* valuesInDb, int numChannels);
-#ifndef NO_VS
-    void virtualStudioMode();
-#endif
 
    private:
     enum runTypeT { P2P_CLIENT, P2P_SERVER, HUB_CLIENT, HUB_SERVER };
@@ -99,8 +96,8 @@ class QJackTrip : public QMainWindow
     int findTab(const QString& tabName);
     void enableUi(bool enabled);
     void advancedOptionsForHubServer(bool isHubServer);
-    void migrateSettings();
-    void loadSettings(Settings* cliSettings = nullptr);
+    bool migrateSettings();
+    void loadSettings(bool& migrated, Settings* cliSettings = nullptr);
     void saveSettings();
 
 #ifdef RT_AUDIO
@@ -131,8 +128,6 @@ class QJackTrip : public QMainWindow
     bool m_jackTripRunning;
     bool m_isExiting;
     bool m_exitSent;
-
-    bool m_suppressCommandlineWarning;
 
     float m_meterMax = 0.0;
     float m_meterMin = -64.0;

@@ -35,16 +35,9 @@
  */
 
 #include "UserInterface.h"
-
 #include <QSettings>
 
-#ifndef NO_VS
-#include "vs/virtualstudio.h"
-#endif  // NO_VS
-
-#ifndef NO_CLASSIC
 #include "gui/qjacktrip.h"
-#endif  // NO_CLASSIC
 
 #if !defined(NO_UPDATER) && !defined(__unix__)
 #include "dblsqd/feed.h"
@@ -121,12 +114,7 @@ UserInterface::UserInterface(QSharedPointer<Settings>& settings) : m_cliSettings
 
 UserInterface::~UserInterface()
 {
-#ifndef NO_VS
-    m_vs_ui.clear();
-#endif
-#ifndef NO_CLASSIC
     m_classic_ui.clear();
-#endif
 }
 
 QCoreApplication* UserInterface::createApplication(int& argc, char* argv[])
@@ -144,14 +132,10 @@ QCoreApplication* UserInterface::createApplication(int& argc, char* argv[])
 #endif
 
     QCoreApplication* app;
-#ifdef NO_VS
     app = QJackTrip::createApplication(argc, argv);
-#else
-    app = VirtualStudio::createApplication(argc, argv);
-#endif
-    app->setOrganizationName(QStringLiteral("jacktrip"));
-    app->setOrganizationDomain(QStringLiteral("jacktrip.org"));
-    app->setApplicationName(QStringLiteral("JackTrip"));
+    app->setOrganizationName(QStringLiteral("psi-borg"));
+    app->setOrganizationDomain(QStringLiteral("psi-borg.org"));
+    app->setApplicationName(QStringLiteral("QJackTrip"));
     app->setApplicationVersion(gVersion);
 
     return app;
@@ -174,46 +158,18 @@ void UserInterface::start(QApplication* app)
     }
 #endif  // _WIN32
 
-#ifndef NO_CLASSIC
     m_classic_ui.reset(new QJackTrip(*this));
     QObject::connect(m_classic_ui.data(), &QJackTrip::signalExit, app,
                      &QCoreApplication::quit, Qt::QueuedConnection);
-#ifdef NO_VS
     m_classic_ui->show();
-#endif  // NO_VS
-#endif  // NO_CLASSIC
 
     QSettings settings;
 
-#ifndef NO_VS
-    m_vs_ui.reset(new VirtualStudio(*this));
-    QObject::connect(m_vs_ui.data(), &VirtualStudio::signalExit, app,
-                     &QCoreApplication::quit, Qt::QueuedConnection);
-    // Check which mode we are running in
-    uiModeT uiMode = UserInterface::MODE_UNSET;
-    if (!m_cliSettings->getDeeplink().isEmpty()) {
-        uiMode = MODE_VS;
-    } else if (m_cliSettings->guiForceClassicMode()) {
-        uiMode = MODE_CLASSIC;
-        // force settings change; otherwise, virtual studio
-        // window will still be displayed
-        settings.setValue(QStringLiteral("UiMode"), uiMode);
-    } else {
-        uiMode = static_cast<uiModeT>(
-            settings.value(QStringLiteral("UiMode"), MODE_UNSET).toInt());
-    }
-    setMode(uiMode);
-#endif  // NO_VS
-
 #if !defined(NO_UPDATER) && !defined(__unix__)
-#ifndef PSI
-    QString updateChannel =
-        settings.value(QStringLiteral("UpdateChannel"), "stable").toString().toLower();
-    QString baseUrl =
-        QStringLiteral("https://files.jacktrip.org/app-releases/%1").arg(updateChannel);
-#else
+#ifdef PSI
+    //QString updateChannel =
+        //settings.value(QStringLiteral("UpdateChannel"), "stable").toString().toLower();
     QString baseUrl = QStringLiteral("https://nuages.psi-borg.org/jacktrip");
-#endif  // PSI
     // Setup auto-update feed
     dblsqd::Feed* feed = new dblsqd::Feed();
 #ifdef _WIN32
@@ -226,52 +182,23 @@ void UserInterface::start(QApplication* app)
         dblsqd::UpdateDialog* updateDialog = new dblsqd::UpdateDialog(feed);
         updateDialog->setIcon(":/qjacktrip/icon.png");
     }
+#endif  // PSI
 #endif  // !defined(NO_UPDATER) && !defined(__unix__)
 }
 
 void UserInterface::setMode(uiModeT m)
 {
-#ifdef NO_VS
+    //TODO: Refactor this code.
     if (m == MODE_VS) {
         std::cerr << "JackTrip was not built with support for Virtual Studio mode."
                   << std::endl;
     }
     m = MODE_CLASSIC;
-#endif
-
-#ifdef NO_CLASSIC
-    if (m == MODE_CLASSIC) {
-        std::cerr << "JackTrip was not built with support for Classic mode." << std::endl;
-    }
-    m = MODE_VS;
-#endif
 
     switch (m) {
     case MODE_UNSET:
-    case MODE_VS:
-#ifndef NO_VS
-        m_vs_ui->show();
-        if (m == MODE_VS || (m == MODE_UNSET && m_vs_ui->vsFtux())) {
-            m_vs_ui->setWindowState(QStringLiteral("login"));
-        } else if (m == MODE_UNSET && !m_vs_ui->vsFtux()) {
-            m_vs_ui->setWindowState(QStringLiteral("start"));
-        }
-        if (m_vs_ui->windowState() == "login")
-            m_vs_ui->login();
-#ifndef NO_CLASSIC
-        if (m_uiMode == MODE_CLASSIC)
-            m_classic_ui->hide();
-#endif  // NO_CLASSIC
-#endif  // NO_VS
-        m_uiMode = MODE_VS;
-        break;
     case MODE_CLASSIC:
-#ifndef NO_CLASSIC
         m_classic_ui->show();
-#ifndef NO_VS
-        m_vs_ui->hide();
-#endif  // NO_VS
-#endif  // NO_CLASSIC
         m_uiMode = MODE_CLASSIC;
         break;
     default:
