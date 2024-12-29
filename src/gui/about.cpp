@@ -57,14 +57,17 @@ About::About(QWidget* parent) : QDialog(parent), m_ui(new Ui::About)
         m_ui->aboutLabel->text().replace(QLatin1String("%QTVERSION%"), qVersion()));
 
     // Replace %LICENSE%
+    // Not currently needed, but keep in place in case that changes.
     QString licenseText;
 #if defined(_WIN32) && defined(RT_AUDIO)
-    licenseText = QLatin1String(
+    // Not building RtAudio with ASIO support.
+    /*licenseText = QLatin1String(
         "This build of JackTrip includes support for ASIO. ASIO is a trademark and "
-        "software of Steinberg Media Technologies GmbH.</p><p></p><p>");
+        "software of Steinberg Media Technologies GmbH.</p><p></p><p>");*/
 #endif
 #ifdef QT_OPENSOURCE
-    licenseText += QLatin1String("This build of JackTrip is subject to LGPL license. ");
+    // We're already beholden to the GPL now.
+    //licenseText += QLatin1String("This build of JackTrip is subject to LGPL license. ");
 #endif
     m_ui->aboutLabel->setText(
         m_ui->aboutLabel->text().replace(QLatin1String("%LICENSE%"), licenseText));
@@ -87,7 +90,7 @@ About::About(QWidget* parent) : QDialog(parent), m_ui(new Ui::About)
         m_ui->aboutLabel->text().replace(QLatin1String("%BUILD%"), buildString));
 
 #ifdef __APPLE__
-    m_ui->aboutImage->setPixmap(QPixmap(":/images/icon_256.png"));
+    m_ui->aboutImage->setPixmap(QPixmap(":/images/icon_128@2x.png"));
 #endif
 
     aboutText.setHtml(m_ui->aboutLabel->text());

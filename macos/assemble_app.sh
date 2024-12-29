@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 APPNAME="JackTrip"
 BUNDLE_ID="org.jacktrip.jacktrip"
 BUILD_INSTALLER=false
@@ -140,7 +138,7 @@ sed -i '' "s/%BUNDLEID%/$BUNDLE_ID/" "$APPNAME.app/Contents/Info.plist"
 
 if [ -n "$DYNAMIC_QT" ]; then
     QT_VERSION="qt$(echo "$DYNAMIC_QT" | sed -E '1!d;s/.*compatibility version ([0-9]+)\.[0-9]+\.[0-9]+.*/\1/g')"
-    echo "Detected a dynamic Qt$QT_VERSION binary"
+    echo "Detected a dynamic $QT_VERSION binary"
     DEPLOY_CMD="$(which macdeployqt)"
     if [ -z "$DEPLOY_CMD" ]; then
         # Attempt to find macdeployqt. Try macports location first, then brew.
@@ -153,21 +151,14 @@ if [ -n "$DYNAMIC_QT" ]; then
             exit 1
         fi
     fi
-    DEPLOY_OPTS="-executable=$APPNAME.app/Contents/MacOS/jacktrip -libpath=$QT_PATH/lib"
+    QMLDIR=""
     if [ -n "$DYNAMIC_VS" ]; then
-        DEPLOY_OPTS="$DEPLOY_OPTS -qmldir=../src/vs"
+        QMLDIR=" -qmldir=../src/gui"
     fi
-    $DEPLOY_CMD "$APPNAME.app" $DEPLOY_OPTS
-
     if [ -n "$CERTIFICATE" ]; then
-        # manually sign contents since the macdeployqt built-ins do not work (rpath errors)
-        echo "Signing app contents"
-        PATHS="$APPNAME.app/Contents/Frameworks $APPNAME.app/Contents/PlugIns $APPNAME.app/Contents/Resources"
-        find $PATHS -type f | while read fname; do
-            if [[ -f $fname ]]; then
-                codesign -f -s "$CERTIFICATE" --timestamp --entitlements entitlements.plist --options "runtime" "$fname"
-            fi
-        done
+        $DEPLOY_CMD "$APPNAME.app"$QMLDIR -codesign="$CERTIFICATE"
+    else
+        $DEPLOY_CMD "$APPNAME.app"$QMLDIR
     fi
 fi
 

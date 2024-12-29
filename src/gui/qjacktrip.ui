@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>409</width>
-    <height>961</height>
+    <height>911</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>JackTrip</string>
+   <string>QJackTrip</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
+   <iconset resource="qjacktrip.qrc">
     <normaloff>:/images/icon_32.png</normaloff>:/images/icon_32.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -308,19 +308,29 @@ play from this machine. (Available in client fan out/in and full mix modes.)</st
            <string/>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="passwordEdit">
+           <item row="2" column="0">
+            <widget class="QLabel" name="usernameLabel">
              <property name="enabled">
               <bool>false</bool>
              </property>
-             <property name="toolTip">
-              <string>Enter your password. (This will not be shown or saved.)</string>
+             <property name="text">
+              <string>&amp;Username</string>
              </property>
-             <property name="echoMode">
-              <enum>QLineEdit::Password</enum>
+             <property name="buddy">
+              <cstring>usernameEdit</cstring>
              </property>
-             <property name="cursorPosition">
-              <number>0</number>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="passwordLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>&amp;Password</string>
+             </property>
+             <property name="buddy">
+              <cstring>passwordEdit</cstring>
              </property>
             </widget>
            </item>
@@ -334,7 +344,7 @@ play from this machine. (Available in client fan out/in and full mix modes.)</st
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="2" column="1">
             <widget class="QLineEdit" name="usernameEdit">
              <property name="enabled">
               <bool>false</bool>
@@ -344,39 +354,19 @@ play from this machine. (Available in client fan out/in and full mix modes.)</st
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="passwordLabel">
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="passwordEdit">
              <property name="enabled">
               <bool>false</bool>
              </property>
-             <property name="text">
-              <string>&amp;Password</string>
+             <property name="toolTip">
+              <string>Enter your password. (This will not be shown or saved.)</string>
              </property>
-             <property name="buddy">
-              <cstring>passwordEdit</cstring>
+             <property name="echoMode">
+              <enum>QLineEdit::Password</enum>
              </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="usernameLabel">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>&amp;Username</string>
-             </property>
-             <property name="buddy">
-              <cstring>usernameEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QLabel" name="authNotVSLabel">
-             <property name="text">
-              <string>(This is for JackTrip's inbuilt authentication system, not for the Virtual Studio. To connect to a Virtual Studio server, press the &quot;Virtual Studio Mode&quot; button below.)</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
+             <property name="cursorPosition">
+              <number>0</number>
              </property>
             </widget>
            </item>
@@ -405,7 +395,7 @@ play from this machine. (Available in client fan out/in and full mix modes.)</st
            <string/>
           </property>
           <layout class="QGridLayout" name="gridLayout_7">
-           <item row="3" column="2">
+           <item row="2" column="2">
             <widget class="QPushButton" name="keyBrowse">
              <property name="enabled">
               <bool>false</bool>
@@ -415,63 +405,7 @@ play from this machine. (Available in client fan out/in and full mix modes.)</st
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="3">
-            <widget class="QLabel" name="authDisclaimerLabel">
-             <property name="text">
-              <string>(This is a work in progress and needs to be manually configured outside of the app. Only use if you know what you're doing.)</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="certLabel">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>&amp;Certificate File</string>
-             </property>
-             <property name="buddy">
-              <cstring>certEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="keyLabel">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>&amp;Key File</string>
-             </property>
-             <property name="buddy">
-              <cstring>keyEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="keyEdit">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="toolTip">
-              <string>Choose the private key that the server should use for the SSL connection.</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="certEdit">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="toolTip">
-              <string>Choose the certificate file that the server should use to establish an initial SSL connection.</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
+           <item row="1" column="2">
             <widget class="QPushButton" name="certBrowse">
              <property name="enabled">
               <bool>false</bool>
@@ -491,7 +425,7 @@ play from this machine. (Available in client fan out/in and full mix modes.)</st
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="credsLabel">
              <property name="enabled">
               <bool>false</bool>
@@ -504,23 +438,69 @@ play from this machine. (Available in client fan out/in and full mix modes.)</st
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="credsEdit">
+           <item row="1" column="0">
+            <widget class="QLabel" name="certLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>&amp;Certificate File</string>
+             </property>
+             <property name="buddy">
+              <cstring>certEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="certEdit">
              <property name="enabled">
               <bool>false</bool>
              </property>
              <property name="toolTip">
-              <string>Choose the file containing the list of usernames and passwords.</string>
+              <string>Choose the certificate file that the server should use to establish an initial SSL connection.</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="2">
+           <item row="3" column="2">
             <widget class="QPushButton" name="credsBrowse">
              <property name="enabled">
               <bool>false</bool>
              </property>
              <property name="text">
               <string>Browse</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="keyLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>&amp;Key File</string>
+             </property>
+             <property name="buddy">
+              <cstring>keyEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="keyEdit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Choose the private key that the server should use for the SSL connection.</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="credsEdit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Choose the file containing the list of usernames and passwords.</string>
              </property>
             </widget>
            </item>
@@ -541,13 +521,6 @@ play from this machine. (Available in client fan out/in and full mix modes.)</st
              </size>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="vsModeButton">
-            <property name="text">
-             <string>&amp;Virtual Studio Mode</string>
-            </property>
-           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="aboutButton">
@@ -1950,7 +1923,6 @@ To connect to a hub server you need to run as a hub client.</string>
   <tabstop>authCheckBox</tabstop>
   <tabstop>usernameEdit</tabstop>
   <tabstop>passwordEdit</tabstop>
-  <tabstop>vsModeButton</tabstop>
   <tabstop>aboutButton</tabstop>
   <tabstop>clientNameEdit</tabstop>
   <tabstop>remoteNameEdit</tabstop>

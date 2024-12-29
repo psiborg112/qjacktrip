@@ -5,8 +5,7 @@ if host_machine.system() == 'windows'
 					depend_files: 'jacktrip.ico',
 					include_directories: '.')
 
-	defines += '-D_WIN32_WINNT=0x0A00'
-	defines += '-DWINVER=0x0A00'
+	defines += '-D_WIN32_WINNT=0x0600'
 	defines += '-DWIN32_LEAN_AND_MEAN'
 	defines += '-DNOMINMAX'
 
@@ -21,16 +20,6 @@ if host_machine.system() == 'windows'
 		endif
 		wingetopt = cmake.subproject('wingetopt', options: opt_var)
 		deps += wingetopt.dependency('wingetopt')
-		link_args += 'userenv.lib'
-		link_args += 'Synchronization.lib'
-		link_args += 'Netapi32.lib'
-		link_args += 'Version.lib'
-		link_args += 'Dwrite.lib'
-		link_args += 'Iphlpapi.lib'
-		link_args += 'Secur32.lib'
-		link_args += 'Winhttp.lib'
-		link_args += 'Dnsapi.lib'
-		link_args += 'Iphlpapi.lib'
 	endif
 
 endif
