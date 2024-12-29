@@ -169,7 +169,7 @@ void UserInterface::start(QApplication* app)
 #ifdef PSI
     //QString updateChannel =
         //settings.value(QStringLiteral("UpdateChannel"), "stable").toString().toLower();
-    QString baseUrl = QStringLiteral("https://nuages.psi-borg.org/jacktrip");
+    QString baseUrl = QStringLiteral("https://nuages.psi-borg.org/qjacktrip");
     // Setup auto-update feed
     dblsqd::Feed* feed = new dblsqd::Feed();
 #ifdef _WIN32
@@ -180,7 +180,7 @@ void UserInterface::start(QApplication* app)
 #endif
     if (feed) {
         dblsqd::UpdateDialog* updateDialog = new dblsqd::UpdateDialog(feed);
-        updateDialog->setIcon(":/qjacktrip/icon.png");
+        updateDialog->setIcon(":/icon_32.png");
     }
 #endif  // PSI
 #endif  // !defined(NO_UPDATER) && !defined(__unix__)
