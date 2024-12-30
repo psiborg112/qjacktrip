@@ -41,32 +41,26 @@ for %%f in (..\LICENSE.md ..\LICENSES\GPL-3.0.txt ..\LICENSES\LGPL-3.0-only.txt)
 echo }>>%LICENSEPATH%
 
 copy dialog.bmp deploy\
-if exist ..\builddir\release\jacktrip.exe (set JACKTRIP=..\builddir\release\jacktrip.exe) else (set JACKTRIP=..\builddir\jacktrip.exe)
+if exist ..\builddir\release\qjacktrip.exe (set JACKTRIP=..\builddir\release\qjacktrip.exe) else (set JACKTRIP=..\builddir\qjacktrip.exe)
 copy %JACKTRIP% deploy\
 cd deploy
 set "WIXDEFINES="
-for /f "tokens=*" %%a in ('%QTLIBPATH%\objdump -p jacktrip.exe ^| findstr Qt%QTVERSION%Core.dll') do set DYNAMIC_QT=%%a
+for /f "tokens=*" %%a in ('%QTLIBPATH%\objdump -p qjacktrip.exe ^| findstr Qt%QTVERSION%Core.dll') do set DYNAMIC_QT=%%a
 if defined DYNAMIC_QT (
 	echo Including Qt Files
-	for /f "tokens=*" %%a in ('%QTLIBPATH%\objdump -p jacktrip.exe ^| findstr Qt%QTVERSION%Qml.dll') do set VS=%%a
-	if defined VS (
-		if %QTVERSION%=="6" (
-			echo The installer is not designed to handle dynamic Virtual Studio builds using Qt6 yet.
-			exit /b 1
-		)
-		%QTBINPATH%\windeployqt --qmldir ..\..\src\gui jacktrip.exe
-		set WIXDEFINES=%WIXDEFINES% -dvs
-	) else (
-		%QTBINPATH%\windeployqt jacktrip.exe
+	%QTBINPATH%\windeployqt qjacktrip.exe
+
+	Rem windeployqt takes care of this now
+	if %QTVERSION%=="5" (
+		copy "%QTLIBPATH%\libgcc_s_seh-1.dll" .\
+		copy "%QTLIBPATH%\libstdc++-6.dll" .\
+		copy "%QTLIBPATH%\libwinpthread-1.dll" .\
 	)
-	copy "%QTLIBPATH%\libgcc_s_seh-1.dll" .\
-	copy "%QTLIBPATH%\libstdc++-6.dll" .\
-	copy "%QTLIBPATH%\libwinpthread-1.dll" .\
 	copy "%SSLPATH%\libcrypto-1_1-x64.dll" .\
 	copy "%SSLPATH%\libssl-1_1-x64.dll" .\
 	set WIXDEFINES=!WIXDEFINES! -ddynamic
 )
-for /f "tokens=*" %%a in ('%QTLIBPATH%\objdump -p jacktrip.exe ^| findstr librtaudio.dll') do set RTAUDIO=%%a
+for /f "tokens=*" %%a in ('%QTLIBPATH%\objdump -p qjacktrip.exe ^| findstr librtaudio.dll') do set RTAUDIO=%%a
 if defined RTAUDIO (
 	echo Including librtaudio
 	copy %RTAUDIOLIB% .\
@@ -74,17 +68,17 @@ if defined RTAUDIO (
 )
 set WIXDEFINES=%WIXDEFINES% -dqt%QTVERSION%
 
-copy ..\jacktrip.wxs .\
+copy ..\qjacktrip.wxs .\
 copy ..\files.wxs .\
-.\jacktrip --test-gui
+.\qjacktrip --test-gui
 if %ERRORLEVEL% NEQ 0 (
-	echo You need to build jacktrip with gui support to build the installer.
+	echo You need to build qjacktrip with gui support to build the installer.
 	exit /b 1
 )
 rem Get our version number
-for /f "tokens=*" %%a in ('.\jacktrip -v ^| findstr VERSION') do for %%b in (%%~a) do set VERSION=%%b
+for /f "tokens=*" %%a in ('.\qjacktrip -v ^| findstr VERSION') do for %%b in (%%~a) do set VERSION=%%b
 for /f "tokens=1 delims=-" %%a in ("%VERSION%") do set VERSION=%%a
 echo Version=%VERSION%
-candle.exe -arch x64 -ext WixUIExtension -ext WixUtilExtension -dVersion=%VERSION%%WIXDEFINES% jacktrip.wxs files.wxs
-light.exe -ext WixUIExtension -ext WixUtilExtension -o JackTrip.msi jacktrip.wixobj files.wixobj
+candle.exe -arch x64 -ext WixUIExtension -ext WixUtilExtension -dVersion=%VERSION%%WIXDEFINES% qjacktrip.wxs files.wxs
+light.exe -ext WixUIExtension -ext WixUtilExtension -o QJackTrip.msi qjacktrip.wixobj files.wixobj
 endlocal

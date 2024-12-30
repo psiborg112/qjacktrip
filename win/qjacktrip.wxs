@@ -1,25 +1,25 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-    <Product Name='JackTrip' Manufacturer='JackTrip'
+    <Product Name='QJackTrip' Manufacturer='psi-borg'
         Id='*'
         UpgradeCode='70450e42-8a91-4c28-8f00-52c6b8e86e37'
         Language='1033' Codepage='1252' Version='$(var.Version)'>
 
-        <Package Id='*' Keywords='Installer' Description='JackTrip Installer'
-            Comments='Developed by SoundWIRE Group at CCRMA, Stanford' Manufacturer='JackTrip'
+        <Package Id='*' Keywords='Installer' Description='QJackTrip Installer'
+            Comments='Developed by SoundWIRE Group at CCRMA, Stanford' Manufacturer='psi-borg'
             InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
-        <Media Id='1' Cabinet='JackTrip.cab' EmbedCab='yes' DiskPrompt='Disk 1' />
-        <Property Id='DiskPrompt' Value='JackTrip Installer File' />
+        <Media Id='1' Cabinet='QJackTrip.cab' EmbedCab='yes' DiskPrompt='Disk 1' />
+        <Property Id='DiskPrompt' Value='QJackTrip Installer File' />
         <MajorUpgrade AllowDowngrades="no" DowngradeErrorMessage="A newer version is already installed."
             AllowSameVersionUpgrades="no" />
 
         <Directory Id='TARGETDIR' Name='SourceDir'>
             <Directory Id='ProgramFiles64Folder' Name='PFiles'>
-                <Directory Id='INSTALLDIR' Name='JackTrip'>
+                <Directory Id='INSTALLDIR' Name='QJackTrip'>
                 </Directory>
             </Directory>
             <Directory Id='ProgramMenuFolder' Name='Programs'>
-                <Directory Id='ProgramMenuDir' Name='JackTrip'>
+                <Directory Id='ProgramMenuDir' Name='QJackTrip'>
                     <Component Id="ProgramMenuDir" Guid="2f25e96a-47a5-4eca-b367-a78ce536d9b9">
                         <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
                         <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
@@ -28,14 +28,14 @@
             </Directory>
         </Directory>
 
-        <Feature Id='NormalInstall' Title='JackTrip' Description='Standard Install'
+        <Feature Id='NormalInstall' Title='QJackTrip' Description='Standard Install'
             Level='1' ConfigurableDirectory='INSTALLDIR'>
-            <ComponentGroupRef Id='jacktrip' />
+            <ComponentGroupRef Id='qjacktrip' />
             <ComponentRef Id='ProgramMenuDir' />
         </Feature>
 
-        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch JackTrip" />
-        <Property Id="WixShellExecTarget" Value="[INSTALLDIR]\jacktrip.exe" />
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch QJackTrip" />
+        <Property Id="WixShellExecTarget" Value="[INSTALLDIR]\qjacktrip.exe" />
         <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
 
         <WixVariable Id='WixUIDialogBmp' Value='dialog.bmp' />
@@ -48,6 +48,6 @@
                 Event="DoAction" 
                 Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
         </UI>
-        <Icon Id='jacktrip.exe' SourceFile='jacktrip.exe' />
+        <Icon Id='qjacktrip.exe' SourceFile='qjacktrip.exe' />
     </Product>
 </Wix>

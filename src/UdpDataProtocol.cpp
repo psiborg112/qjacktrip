@@ -50,7 +50,7 @@
 #include "jacktrip_globals.h"
 #ifdef _WIN32
 // #include <winsock.h>
-#include <qos2.h>
+// #include <qos2.h>
 #include <stdio.h>
 #include <winsock2.h>  //cc need SD_SEND
 #pragma comment(lib, "ws2_32.lib")
